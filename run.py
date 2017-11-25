@@ -13,7 +13,7 @@ seq_len = 10
 train_samples = 10000
 test_samples = 100
     
-x_raw, y_raw, info = lstm.load_data(path="./COP_Data.csv", sequence_length = seq_len, row_start=2, column_start=2, output_border_start=55, do_normalize=True)
+x_raw, y_raw, info = lstm.load_data(path="./data.csv", sequence_length = seq_len, row_start=2, column_start=2, output_border_start=55, do_normalize=True)
 
 #print(x_raw.shape, y_raw.shape)
 
