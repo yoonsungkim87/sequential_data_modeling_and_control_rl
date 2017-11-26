@@ -41,5 +41,5 @@ m_.fit(x_train, y_train, batch_size=1, nb_epoch=10)
 m_.save_weights("./save_model/env.h5")
 y_pred = lstm.predict_sequence(m_, x_test, batch_size=1)
 
-for i in range(y_dim):
-    plot_results(y_pred.reshape(-1, y_dim).transpose()[i], y_test.reshape(-1, y_dim).transpose()[i])
+#for i in range(y_dim):
+#    plot_results(y_pred.reshape(-1, y_dim).transpose()[i], y_test.reshape(-1, y_dim).transpose()[i])
