@@ -1,3 +1,5 @@
+#Modeling Environment
+
 import os
 import time
 import warnings
@@ -15,13 +17,12 @@ from keras.layers.recurrent import LSTM
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' #Hide messy TensorFlow warnings
 warnings.filterwarnings("ignore") #Hide messy Numpy warnings
 
-def load_data(path, sequence_length, row_start, column_start, output_border_start, do_normalize):
+def load_data(path, sequence_length, row_start_ind, in_column_ind, out_column_ind, do_normalize):
     with open(path) as f:
         content = f.readlines()
     content = [a[0].split(",")for a in [x.strip().split("\n") for x in content]]
     np_content = np.array(content)
-    np_content = np_content[row_start-1:].transpose()[column_start-1:].transpose()
-    np_content = np.asarray(np_content, dtype=np.float32)
+    np_content = np.asarray(np_content[row_start_ind:,in_column_ind+out_column_ind], dtype=np.float32)
     #normalize
     if do_normalize:
         np_content, info = normalize(np_content)
@@ -31,8 +32,8 @@ def load_data(path, sequence_length, row_start, column_start, output_border_star
     x_temp = []
     y_temp = []
     for i in range(np_content.shape[0] - sequence_length):
-        x_temp.append(np_content[i:i+sequence_length,:output_border_start-1])
-        y_temp.append(np_content[i+sequence_length:i+sequence_length+1,output_border_start-1:])
+        x_temp.append(np_content[i:i+sequence_length,:len(in_column_ind)])
+        y_temp.append(np_content[i+sequence_length:i+sequence_length+1,len(in_column_ind):])
     return np.array(x_temp), np.array(y_temp), info
 
 def normalize(data):
