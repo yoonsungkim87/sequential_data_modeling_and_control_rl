@@ -38,8 +38,8 @@ x_test, y_test = x_raw[-test_samples:,:,:], y_raw[-test_samples:,:,:]
 
 m_ = lstm.build_model(1, seq_len, x_dim, 100, 1, y_dim)
 m_.load_weights("./save_model/supplementary_env.h5")
-m_.fit(x_train, y_train, batch_size=1, nb_epoch=100)
-m_.save_weights("./save_model/supplementary_env.h5")
+#m_.fit(x_train, y_train, batch_size=1, nb_epoch=100)
+#m_.save_weights("./save_model/supplementary_env.h5")
 
 temp = []
 result = []
@@ -50,8 +50,7 @@ for i in range(x_test.shape[0]):
     temp.append(np.concatenate((element[0,1:,:], y_pred[0,:,:]), axis=0))
     result.append(y_pred[0,:,:])
     
-print(y_test.shape)
 result = np.array(result)
 
-#for i in range(y_dim):
-#    plot_results(result.reshape(-1, y_dim).transpose()[i], y_test.reshape(-1, y_dim).transpose()[i])
+for i in range(y_dim):
+    plot_results(result.reshape(-1, y_dim).transpose()[i], y_test.reshape(-1, y_dim).transpose()[i])
