@@ -43,12 +43,14 @@ def normalize(data):
     d = preprocessing.scale(data)
     return d, i
 
-def build_model(batch_size, sequence_length, x_dim, h_dim, num_hid_lay, y_dim):
+def build_model(batch_size, sequence_length, x_dim, h_dim, num_hid_lay, y_dim, add_dropout):
     model = Sequential()
     model.add(LSTM(output_dim=h_dim, return_sequences=True, stateful=True, init='uniform', 
                    batch_input_shape=(batch_size, sequence_length, x_dim)))
     for i in range(num_hid_lay):
         model.add(LSTM(output_dim=h_dim, return_sequences=True, stateful=True, init='uniform'))
+        if add_dropout:
+            model.add(Dropout(0.2))
     model.add(Reshape((1, -1)))
     model.add(TimeDistributed(Dense(y_dim)))
     model.add(Activation('linear'))

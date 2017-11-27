@@ -13,7 +13,7 @@ def plot_results(predicted_data, true_data):
     plt.show()
     
     
-seq_len = 100
+seq_len = 10
 train_samples = 10000
 test_samples = 200
 
@@ -36,10 +36,10 @@ y_dim = y_raw.shape[2]
 x_train, y_train = x_raw[:train_samples,:,:], y_raw[:train_samples,:,:]
 x_test, y_test = x_raw[-test_samples:,:,:], y_raw[-test_samples:,:,:]
 
-m_ = lstm.build_model(1, seq_len, x_dim, 100, 1, y_dim)
-m_.load_weights("./save_model/supplementary_env.h5")
-#m_.fit(x_train, y_train, batch_size=1, nb_epoch=100)
-#m_.save_weights("./save_model/supplementary_env.h5")
+m_ = lstm.build_model(1, seq_len, x_dim, 100, 1, y_dim, True)
+#m_.load_weights("./save_model/supplementary_env.h5")
+m_.fit(x_train, y_train, batch_size=1, nb_epoch=10)
+m_.save_weights("./save_model/supplementary_env.h5")
 
 temp = []
 result = []
