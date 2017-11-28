@@ -20,6 +20,14 @@ class scrEnv(gym.Env):
         self.i1s = 3.39985733e+01
         self.i2s = 1.20738525e+01
         
+        self.m = []
+        self.s = []
+        for i in range(10):
+            self.m.append([self.i1m,self.i2m])
+            self.s.append([self.i1s,self.i2s])
+        self.m = np.array(self.m)
+        self.s = np.array(self.s)
+        
         self.o1m = 2.92767677e+01
         self.o2m = 1.02022934e+01
         self.o3m = 6.67613029e-01
@@ -27,6 +35,20 @@ class scrEnv(gym.Env):
         self.o1s = 1.37448368e+01
         self.o2s = 4.67279196e+00
         self.o3s = 1.12606144e+00
+        
+        x_raw, _, _ = lstm.load_data(
+            path="./data.csv", 
+            sequence_length = self.seq_len, 
+            row_start_ind=1, 
+            in_column_ind=[ 2, 3, 4, 5, 6, 7, 8, 9,10,11,
+                           12,13,14,15,16,17,19,20,28,30,
+                           31,32,33,34,35,36,37,38,39,40,
+                           41,42,43,48,49,50,51],
+            out_column_ind=[18,22], 
+            do_normalize=True)
+        self.sppl_env_stack = x_raw[1,:,:]
+        
+        self.action_state_stack = np.zeros((10,2))
         
         #Return            Supply
         #4.16589241e+01,   8.76622772e+00
@@ -50,7 +72,7 @@ class scrEnv(gym.Env):
         # Flue.Gas.Stack.Nox
         # NH3.Slip
         
-    def mover(state, action, high_limit, low_limit):
+    def mover(self, state, action, high_limit, low_limit):
         if action == 0:
             result = state - self.jump
         elif action == 1:
@@ -78,30 +100,26 @@ class scrEnv(gym.Env):
         
         a1 = int(action/5) #Ammonia.Return.Line.Pre.Control.V.V
         a2 = action%5  # Ammonia.Supply.Line.Flow.Control.V.V
-        t1 = float(self.action_state_stack[9,0])
-        t2 = float(self.action_state_stack[9,1])
-        self.action_state_stack = np.concatenate( \
-            (self.action_state_stack[1:,:], \
-             np.concatenate( \
-                 (self.mover(state = t1, action = a1, high_limit = 100.0, low_limit = -1.0), \
-                  self.mover(state = t2, action = a2, high_limit = 100.0, low_limit = -1.0) \
-                 ),axis=1)), axis=0)
+        self.action_state_stack = np.concatenate((self.action_state_stack[1:,:],
+             np.array([[self.mover(self.action_state_stack[9,0], a1, 100.0, -1.0), \
+                      self.mover(self.action_state_stack[9,1], a2, 100.0, -1.0)]])), axis=0)
         
         
-        action_vector = np.concatenate((self.action_state_stack, self.sppl_env_stack), axis=1).reshape(1,10,39)
+        self.action_state_stack_norm = (self.action_state_stack - self.m) / self.s
+        
+        
+        action_vector = np.concatenate((self.action_state_stack_norm, self.sppl_env_stack), axis=1).reshape(1,10,39)
         y_pred = lstm.predict_sequence(self.m1, action_vector, batch_size=1)  # (1,10,39) tensor input (1,1,3) tensor output
         self.state = y_pred[0,0,:]
         
+        
+        done =  self.state[1] > (7.0 - self.o2m) / self.o2s
+        done = bool(done)
+        
         if not done:
-            if self.state[1] < 7.0:
-                reward = 1.0
-            else:
-                reward = 0.5
+            reward = 1.0
         else:
             reward = 0.0
-        
-        done =  self.state[1] > 15.0
-        done = bool(done)
         
         return self.state, reward, done, {}
 
@@ -119,7 +137,7 @@ class scrEnv(gym.Env):
             do_normalize=True)
         self.sppl_env_stack = x_raw[1,:,:]
         
-        self.action_state_stack = np.zeros((10,2))
+        self.action_state_stack = 50*np.ones((10,2))
         
-        self.state = np.random.uniform(low=-0.01, high=0.01, size=(3,))
+        self.state = np.array([-self.o1m/self.o1s,-self.o2m/self.o2s,-self.o3m/self.o3s])
         return self.state
