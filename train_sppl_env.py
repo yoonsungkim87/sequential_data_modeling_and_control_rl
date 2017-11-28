@@ -30,6 +30,8 @@ x_raw, y_raw, info = lstm.load_data(
                     31,32,33,34,35,36,37,38,39,40,
                     41,42,43,48,49,50,51], 
     do_normalize=True)
+
+#print(info)
     
 x_dim = x_raw.shape[2]
 y_dim = y_raw.shape[2]
@@ -52,5 +54,5 @@ for i in range(x_test.shape[0]):
     
 result = np.array(result)
 
-#for i in range(y_dim):
-#    plot_results(result.reshape(-1, y_dim).transpose()[i], y_test.reshape(-1, y_dim).transpose()[i])
+for i in range(y_dim):
+    plot_results(result.reshape(-1, y_dim).transpose()[i], y_test.reshape(-1, y_dim).transpose()[i])

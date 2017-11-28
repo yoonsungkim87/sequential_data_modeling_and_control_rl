@@ -28,7 +28,7 @@ x_raw, y_raw, info = lstm.load_data(
     out_column_ind=[21,55,58], 
     do_normalize=True)
 
-#print(x_raw.shape, y_raw.shape)
+#print(info)
 
 x_dim = x_raw.shape[2]
 y_dim = y_raw.shape[2]
