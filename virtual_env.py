@@ -22,7 +22,7 @@ class scrEnv(gym.Env):
             out_column_ind=[ 2], 
             do_normalize=True)
         self.temp = []
-        self.temp.append(x_test[1,:,:])
+        self.temp.append(x_raw[1,:,:])
         
         self.m1 = lstm.build_model(1, self.seq_len, 39, 100, 1, 3)
         self.m1.load_weights("./save_model/env.h5")
@@ -39,16 +39,11 @@ class scrEnv(gym.Env):
         # NH3.Slip
         
     def sppl_env_count_up(self, model):
-        
-        temp = []
-        result = []
-        temp.append(x_test[1,:,:])
-        for i in range(x_test.shape[0]):
-            element = temp[-1].reshape(-1,seq_len,37)
-            y_pred = lstm.predict_sequence(m_, element, batch_size=1)
-            temp.append(np.concatenate((element[0,1:,:], y_pred[0,:,:]), axis=0))
-            result.append(y_pred[0,:,:])
-        result = np.array(result)
+        element = self.temp[0].reshape(-1,seq_len,37)
+        y_pred = lstm.predict_sequence(model, element, batch_size=1)
+        self.temp.append(np.concatenate((element[0,1:,:], y_pred[0,:,:]), axis=0))
+        self.temp.pop(0)
+        return y_pred
 
     def _step(self, action):
         
