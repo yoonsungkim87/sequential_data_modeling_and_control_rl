@@ -54,5 +54,5 @@ for i in range(x_test.shape[0]):
     
 result = np.array(result)
 
-for i in range(y_dim):
-    plot_results(result.reshape(-1, y_dim).transpose()[i], y_test.reshape(-1, y_dim).transpose()[i])
+#for i in range(y_dim):
+#    plot_results(result.reshape(-1, y_dim).transpose()[i], y_test.reshape(-1, y_dim).transpose()[i])
