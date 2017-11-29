@@ -36,6 +36,9 @@ class scrEnv(gym.Env):
         self.o2s = 4.67279196e+00
         self.o3s = 1.12606144e+00
         
+        self.mu = np.array([self.o1m,self.o2m,self.o3m])
+        self.sigma = np.array([self.o1s,self.o2s,self.o3s])
+        
         x_raw, _, _ = lstm.load_data(
             path="./data.csv", 
             sequence_length = self.seq_len, 
@@ -110,10 +113,10 @@ class scrEnv(gym.Env):
         
         action_vector = np.concatenate((self.action_state_stack_norm, self.sppl_env_stack), axis=1).reshape(1,10,39)
         y_pred = lstm.predict_sequence(self.m1, action_vector, batch_size=1)  # (1,10,39) tensor input (1,1,3) tensor output
-        self.state = y_pred[0,0,:]
+        self.state = self.sigma*y_pred[0,0,:]+self.mu
         
         
-        done =  self.state[1] > (7.0 - self.o2m) / self.o2s
+        done =  self.state[1] > 7.0
         done = bool(done)
         
         if not done:
