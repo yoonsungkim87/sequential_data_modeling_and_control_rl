@@ -7,10 +7,9 @@ import numpy as np
 
 
 class scrEnv(gym.Env):
-    def __init__(self):
+    def __init__(self, num_episode):
 
         self.seq_len = 10
-        self.state = None
         self.jump = 5
         self.adj = 1
         
@@ -50,7 +49,8 @@ class scrEnv(gym.Env):
             out_column_ind=[18,22], 
             do_normalize=True)
         
-        self.sppl_env_stack = self.x_raw[1,:,:]        
+        self.count = 0
+        self.sppl_env_stack = self.x_raw[:num_episode,:,:]        
         self.action_state_stack = np.concatenate((90*np.ones((10,1)),50*np.ones((10,1))),axis = 1)
         self.state = np.array([-self.o1m/self.o1s,-self.o2m/self.o2s,-self.o3m/self.o3s])
         
@@ -64,9 +64,10 @@ class scrEnv(gym.Env):
         
         self.m1 = lstm.build_model(1, self.seq_len, 39, 100, 1, 3, False)
         self.m1.load_weights("./save_model/env.h5")
-        
+        '''
         self.m2 = lstm.build_model(1, self.seq_len, 37, 100, 1, 37, True)
         self.m2.load_weights("./save_model/supplementary_env.h5")
+        '''
         
         self.action_space = spaces.Discrete(9)
         # Ammonia.Return.Line.Pre.Control.V.V
@@ -97,11 +98,11 @@ class scrEnv(gym.Env):
         
 
     def _step(self, action):
-        
+        '''
         element = self.sppl_env_stack.reshape(-1,self.seq_len,37)
         sppl_env = lstm.predict_sequence(self.m2, element, batch_size=1)  # (1,10,37) tensor input (1,1,37) tensor output
         self.sppl_env_stack = np.concatenate((element[0,1:,:], sppl_env[0,:,:]), axis=0)
-        
+        '''
         a1 = int(action/3) #Ammonia.Return.Line.Pre.Control.V.V
         a2 = action%3  # Ammonia.Supply.Line.Flow.Control.V.V
         self.action_state_stack = np.concatenate((self.action_state_stack[1:,:],
@@ -112,12 +113,13 @@ class scrEnv(gym.Env):
         self.action_state_stack_norm = (self.action_state_stack - self.m) / self.s
         
         
-        action_vector = np.concatenate((self.action_state_stack_norm, self.sppl_env_stack), axis=1).reshape(1,10,39)
+        action_vector = np.concatenate((self.action_state_stack_norm, self.sppl_env_stack[self.count,:,:]), axis=1).reshape(1,10,39)
         y_pred = lstm.predict_sequence(self.m1, action_vector, batch_size=1)  # (1,10,39) tensor input (1,1,3) tensor output
         self.state = self.sigma*y_pred[0,0,:]+self.mu
+        self.count += 1
         
         
-        done =  self.state[1] > 10.0
+        done =  self.state[1] > 20.0
         done = bool(done)
         
         if not done:
@@ -128,7 +130,8 @@ class scrEnv(gym.Env):
         return self.state, reward, done, {}
 
     def _reset(self):
-        self.sppl_env_stack = self.x_raw[1,:,:]        
-        self.action_state_stack =  np.concatenate((90*np.ones((10,1)),50*np.ones((10,1))),axis = 1)
+        self.count = 0
+        #self.sppl_env_stack = self.x_raw[1,:,:]        
+        self.action_state_stack =  np.concatenate((70*np.ones((10,1)),60*np.ones((10,1))),axis = 1)
         self.state = np.array([-self.o1m/self.o1s,-self.o2m/self.o2s,-self.o3m/self.o3s])
         return self.state

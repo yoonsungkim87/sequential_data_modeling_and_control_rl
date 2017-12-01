@@ -119,7 +119,7 @@ class DoubleDQNAgent:
 
 if __name__ == "__main__":
     # In case of CartPole-v1, you can play until 500 time step
-    env = virtual_env.scrEnv()
+    env = virtual_env.scrEnv(EPISODES)
     # get size of state and action from environment
     state_size = env.observation_space.shape[0]
     action_size = env.action_space.n
