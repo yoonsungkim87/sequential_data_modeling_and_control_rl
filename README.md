@@ -2,12 +2,13 @@
 - keras
 - anaconda
 
-# how to *Learn*
-Before you commit code, you need to specify server address and tag name. 
-If you are not using Django framework, do not commit CoInitialize() / CoUninitialize().
+# How to *Train*
+
 ```{.python}
 import lstm
 
 ```
+
+# How to *Run*
 
 # Example Result
