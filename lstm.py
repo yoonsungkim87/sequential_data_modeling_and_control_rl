@@ -55,7 +55,7 @@ def build_model(batch_size, sequence_length, x_dim, h_dim, num_hid_lay, y_dim, a
     model.add(TimeDistributed(Dense(y_dim)))
     model.add(Activation('linear'))
     start = time.time()
-    model.compile(loss='mean_squared_error', optimizer='rmsprop')
+    model.compile(loss='mean_squared_error', optimizer='rmsprop', metrics=['accuracy'])
     #sgd = SGD(lr=0.1, decay=1e-4, momentum=0.2, nesterov=True)
     #model.compile(loss='mean_squared_error', optimizer=sgd)
     print("> Compilation Time : ", time.time() - start)

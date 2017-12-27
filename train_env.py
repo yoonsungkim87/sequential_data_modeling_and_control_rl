@@ -37,7 +37,7 @@ x_test, y_test = x_raw[-test_samples:,:,:], y_raw[-test_samples:,:,:]
 
 m_ = lstm.build_model(1, seq_len, x_dim, 100, 1, y_dim, False)
 m_.load_weights("./save_model/env.h5")
-m_.fit(x_train, y_train, batch_size=1, nb_epoch=10)
+m_.fit(x_train, y_train, batch_size=1, nb_epoch=10, verbose=2, callbacks=[history])
 m_.save_weights("./save_model/env.h5")
 y_pred = lstm.predict_sequence(m_, x_test, batch_size=1)
 
