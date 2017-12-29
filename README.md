@@ -12,4 +12,9 @@ python train_env.py
 
 # How to *Run*
 
+```{.bash}
+python run_reinf.py
+
+```
+
 # Example Result
