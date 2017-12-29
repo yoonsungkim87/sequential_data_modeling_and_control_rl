@@ -1,6 +1,6 @@
 # Prerequisite
 
-- Python 3.6.3 :: Anaconda custom (64-bit)
+- Anaconda 4.3.30
 - OpenAI gym 0.9.3
 
 # How to *Train*
