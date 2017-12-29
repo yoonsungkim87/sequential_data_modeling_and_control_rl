@@ -19,3 +19,4 @@ python run_reinf.py
 
 # Example Result
 
+![fig1](https://github.com/yoonsungkim87/sequential_data_modeling_and_control_rl/blob/master/example.png "process data")
