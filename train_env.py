@@ -14,8 +14,8 @@ def plot_results(predicted_data, true_data):
     
     
 seq_len = 10
-train_samples = 1000
-test_samples = 200
+train_samples = 100000
+test_samples = 2000
 
 x_raw, y_raw, info = lstm.load_data(
     path="../2014-04-01_1m_172800.csv", 

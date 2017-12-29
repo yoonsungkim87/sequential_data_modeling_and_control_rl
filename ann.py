@@ -44,7 +44,7 @@ def normalize(data):
 def build_model(batch_size, sequence_length, x_dim, h_dim, num_hid_lay, y_dim, add_dropout):
     model = Sequential()
     model.add(Dense(output_dim=h_dim, init='uniform', 
-                   batch_input_shape=(batch_size, sequence_length, x_dim)))
+                   batch_input_shape=(batch_size, sequence_length, x_dim), activation='relu'))
     for i in range(num_hid_lay):
         model.add(Dense(output_dim=h_dim, init='uniform', activation='relu'))
         if add_dropout:

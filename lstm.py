@@ -33,7 +33,7 @@ def load_data(path, sequence_length, row_start_ind, in_column_ind, out_column_in
     y_temp = []
     for i in range(np_content.shape[0] - sequence_length):
         x_temp.append(np_content[i:i+sequence_length,:len(in_column_ind)])
-        y_temp.append(np_content[i+sequence_length:i+sequence_length+1,len(in_column_ind):])
+        y_temp.append(np_content[i+sequence_length-1:i+sequence_length,len(in_column_ind):])
     return np.array(x_temp), np.array(y_temp), info
 
 def normalize(data):
